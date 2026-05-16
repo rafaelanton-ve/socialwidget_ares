@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Supabase Connection</title>
+  <style>
+    body { font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+    pre { background: #1a1a2e; color: #0f0; padding: 20px; border-radius: 8px; overflow: auto; }
+    .success { color: #4ade80; }
+    .error { color: #f87171; }
+    h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>Supabase Connection Test</h1>
+  
+  <h2>1. Tenant: demo-empresa</h2>
+  <pre id="tenant-result">Loading...</pre>
+  
+  <h2>2. Social Links</h2>
+  <pre id="social-result">Loading...</pre>
+  
+  <h2>3. Secondary Links</h2>
+  <pre id="secondary-result">Loading...</pre>
+
+  <script>
+    const SUPABASE_URL = 'https://nrlheaawsxdwditkgckc.supabase.co';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE';
+
+    async function testAPI() {
+      // Test 1: Get tenant
+      try {
+        const tenantRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/tenants?slug=eq.demo-empresa&select=*`,
+          {
+            headers: {
+              'apikey': ANON_KEY,
+              'Authorization': `Bearer ${ANON_KEY}`
+            }
+          }
+        );
+        const tenantData = await tenantRes.json();
+        document.getElementById('tenant-result').textContent = 
+          tenantRes.ok ? JSON.stringify(tenantData, null, 2) : 'Error: ' + tenantRes.status;
+        
+        if (tenantData && tenantData.length > 0) {
+          const tenantId = tenantData[0].id;
+          
+          // Test 2: Get social links
+          const socialRes = await fetch(
+            `${SUPABASE_URL}/rest/v1/social_links?tenant_id=eq.${tenantId}&select=*`,
+            {
+              headers: {
+                'apikey': ANON_KEY,
+                'Authorization': `Bearer ${ANON_KEY}`
+              }
+            }
+          );
+          const socialData = await socialRes.json();
+          document.getElementById('social-result').textContent = 
+            socialRes.ok ? JSON.stringify(socialData, null, 2) : 'Error: ' + socialRes.status;
+
+          // Test 3: Get secondary links
+          const secondaryRes = await fetch(
+            `${SUPABASE_URL}/rest/v1/secondary_links?tenant_id=eq.${tenantId}&select=*`,
+            {
+              headers: {
+                'apikey': ANON_KEY,
+                'Authorization': `Bearer ${ANON_KEY}`
+              }
+            }
+          );
+          const secondaryData = await secondaryRes.json();
+          document.getElementById('secondary-result').textContent = 
+            secondaryRes.ok ? JSON.stringify(secondaryData, null, 2) : 'Error: ' + secondaryRes.status;
+        }
+      } catch (err) {
+        document.getElementById('tenant-result').textContent = 'Error: ' + err.message;
+      }
+    }
+
+    testAPI();
+  </script>
+</body>
+</html>
