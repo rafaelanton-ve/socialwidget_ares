@@ -68,6 +68,7 @@ El sistema se divide en 3 partes principales:
 - Espaciado generoso y consistente
 - Iconos SVG embebidos en el proyecto (no externo)
 - Micro-interacciones en hover (scale, opacity)
+- No debe usar tailwind
 
 ### Backend
 - Supabase
@@ -89,8 +90,20 @@ El sistema se divide en 3 partes principales:
 - abre un modal principal
 - permite acceder a un segundo modal con información ampliada
 - redirige a redes sociales o comunidades
-Roles
-SUPERADMIN
+
+## Roles
+
+### SUPERADMIN (Administrador del Sistema)
+
+- Acceso completo al dashboard administrativo
+- Gestión de todos los tenants
+- Configuración global del sistema
+
+### TENANT (Cliente)
+
+- Acceso limitado a su propia configuración
+- Personalización de su widget (colores, enlaces, logo)
+- Sin acceso al sistema administrativo
 
 ### Script de instalación
 Ejemplo:

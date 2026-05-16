@@ -1,0 +1,21 @@
+{
+  "name": "social-widget-ares",
+  "version": "1.0.0",
+  "description": "Widget flotante embebible para redes sociales con estilo Vercel",
+  "main": "src/widget.js",
+  "scripts": {
+    "build": "terser src/widget.js -o dist/widget.min.js --compress --mangle",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "widget",
+    "social-media",
+    "floating-button",
+    "chat-widget"
+  ],
+  "author": "Ares",
+  "license": "MIT",
+  "devDependencies": {
+    "terser": "^5.27.0"
+  }
+}

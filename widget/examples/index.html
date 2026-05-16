@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Social Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #1a1a2e;
+      margin-bottom: 16px;
+      font-size: 2.5rem;
+    }
+
+    p {
+      color: #4a4a6a;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .code-block {
+      background: #1a1a2e;
+      color: #a0a0b0;
+      padding: 20px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+    }
+
+    .code-block .tag {
+      color: #ff7b72;
+    }
+
+    .code-block .attr {
+      color: #79c0ff;
+    }
+
+    .code-block .value {
+      color: #a5d6ff;
+    }
+
+    .note {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Bienvenido a Social Widget</h1>
+
+    <div class="card">
+      <h2>Instalación</h2>
+      <p>Agrega el siguiente script a tu sitio web:</p>
+      <div class="code-block">
+        <span class="tag">&lt;script</span>
+        <span class="attr"> src</span>=<span class="value">"https://tu-dominio.com/widget.js"</span>
+        <span class="attr"> data-tenant</span>=<span class="value">"tu-tenant-id"</span><span
+          class="tag">&gt;&lt;/script&gt;</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Características</h2>
+      <ul style="margin-left: 20px; color: #4a4a6a; line-height: 2;">
+        <li>Totalmente aislado con Shadow DOM</li>
+        <li>Estilo visual minimalista estilo Vercel</li>
+        <li>Configuración dinámica desde Supabase</li>
+        <li>Animaciones suaves (250ms ease-out)</li>
+        <li>Iconos SVG embebidos</li>
+        <li>Diseño responsivo</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Personalización</h2>
+      <p>El widget se configura desde el panel de administración. Los clientes pueden personalizar:</p>
+      <ul style="margin-left: 20px; color: #4a4a6a; line-height: 2;">
+        <li>Colores primarios y secundarios</li>
+        <li>Logo de la empresa</li>
+        <li>Descripción</li>
+        <li>Enlaces a redes sociales</li>
+        <li>Enlaces adicionales</li>
+        <li>Posición del widget</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <strong>Nota:</strong> El widget requiere configuración de Supabase. Reemplaza las credenciales de API en el
+      código antes de usar en producción.
+    </div>
+  </div>
+
+  <!-- Widget Script - Descomenta para probar localmente -->
+  <!-- <script src="./src/widget.js" data-tenant="demo-tenant"></script> -->
+</body>
+
+</html>
