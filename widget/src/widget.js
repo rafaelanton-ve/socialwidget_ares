@@ -1,638 +1,513 @@
-(function () {
-  'use strict';
+(() => {
+    if (window.__SOCIAL_WIDGET_LOADED__) return;
+    window.__SOCIAL_WIDGET_LOADED__ = true;
 
-  const DEFAULT_CONFIG = {
-    position: 'bottom-right',
-    primaryColor: '#000000',
-    secondaryColor: '#ffffff',
-    accentColor: '#3b82f6',
-    borderRadius: 16,
-    companyName: 'Empresa',
-    logo: null,
-    description: '',
-    socialLinks: [
-      { name: 'WhatsApp', url: 'https://wa.me/', icon: 'whatsapp' },
-      { name: 'Instagram', url: 'https://instagram.com/', icon: 'instagram' },
-      { name: 'Facebook', url: 'https://facebook.com/', icon: 'facebook' },
-      { name: 'TikTok', url: 'https://tiktok.com/', icon: 'tiktok' }
-    ],
-    secondaryLinks: [
-      { name: 'Sitio web', url: '#', icon: 'globe' },
-      { name: 'Correo', url: 'mailto:', icon: 'mail' }
-    ]
-  };
+    const SVG_ICONS = {
+        whatsapp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`,
+        instagram: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`,
+        telegram: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`,
+        facebook: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.552c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+        linkedin: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>`,
+        github: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`,
+        mail: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+        chat: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>`,
+        close: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+        external: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`,
+        twitter: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+        tiktok: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
+        youtube: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
 
-  class SocialWidget {
-    constructor() {
-      this.config = { ...DEFAULT_CONFIG };
-      this.isOpen = false;
-      this.isSecondaryOpen = false;
-      this.shadowRoot = null;
-      this.tenantId = null;
-      this.init();
-    }
+    };
 
-    init() {
-      const scriptTag = document.currentScript;
-      this.tenantId = scriptTag?.getAttribute('data-tenant') || this.getTenantFromURL();
-
-      if (!this.tenantId) {
-        console.warn('[SocialWidget] No tenant ID provided');
-        return;
-      }
-
-      this.createShadowContainer();
-      this.fetchConfig();
-    }
-
-    getTenantFromURL() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('tenant');
-    }
-
-    createShadowContainer() {
-      const container = document.createElement('div');
-      container.id = 'social-widget-container';
-      container.style.cssText = `
-        position: fixed;
-        z-index: 999999;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      `;
-
-      const position = this.config.position.split('-');
-      container.style[position[0]] = '20px';
-      container.style[position[1]] = '20px';
-
-      document.body.appendChild(container);
-
-      this.shadowRoot = container.attachShadow({ mode: 'open' });
-      this.render();
-    }
-
-async fetchConfig() {
-      try {
-        // Fetch tenant config
-        const tenantResponse = await fetch(
-          `https://nrlheaawsxdwditkgckc.supabase.co/rest/v1/tenants?slug=eq.${this.tenantId}&select=*`,
-          {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE'
+    const SUPABASE_URL = "https://nrlheaawsxdwditkgckc.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE";
+    const DEFAULT_CONFIG = {
+        demo: {
+            brand_color: "#25D366",
+            title: "Contáctanos",
+            message: "Escríbenos o síguenos",
+            logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+            company_name: "Mi Empresa",
+            company_url: "https://miempresa.com",
+            company_socials: {
+                instagram: true,
+                facebook: true,
+                tiktok: true,
+                youtube: true,
             },
-            cache: 'no-store'
-          }
-        );
+            socials: {
+                whatsapp: true,
+                telegram: true,
+            },
+            social_links: {
+                whatsapp: "https://wa.me/584123456789",
+                telegram: "https://telegram.org",
+                instagram: "https://instagram.com/miempresa",
+                facebook: "https://facebook.com/miempresa",
+                tiktok: "https://tiktok.com/@miempresa",
+                youtube: "https://youtube.com/@miempresa",
+            },
+        },
+    };
 
-        if (!tenantResponse.ok) throw new Error('Failed to fetch tenant');
-
-        const tenants = await tenantResponse.json();
-        
-        if (!tenants || tenants.length === 0) {
-          console.warn('[SocialWidget] Tenant not found:', this.tenantId);
-          return;
+    async function fetchTenantConfig(tenantId) {
+        if (SUPABASE_URL === "https://tu-proyecto.supabase.co") {
+            return DEFAULT_CONFIG[tenantId] || DEFAULT_CONFIG.demo;
         }
 
-        const tenant = tenants[0];
-        
-        // Fetch social_links
-        const socialResponse = await fetch(
-          `https://nrlheaawsxdwditkgckc.supabase.co/rest/v1/social_links?tenant_id=eq.${tenant.id}&select=*&order=sort_order`,
-          {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE'
-            },
-            cache: 'no-store'
-          }
-        );
+        try {
+            const encodedTenantId = encodeURIComponent(tenantId);
 
-        // Fetch secondary_links
-        const secondaryResponse = await fetch(
-          `https://nrlheaawsxdwditkgckc.supabase.co/rest/v1/secondary_links?tenant_id=eq.${tenant.id}&select=*&order=sort_order`,
-          {
-            headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE',
-              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE'
-            },
-            cache: 'no-store'
-          }
-        );
+            const tenantResponse = await fetch(
+                `${SUPABASE_URL}/rest/v1/tenants?slug=eq.${encodedTenantId}&select=*`,
+                {
+                    headers: {
+                        apikey: SUPABASE_KEY,
+                        Authorization: `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-        const socialLinks = socialResponse.ok ? await socialResponse.json() : [];
-        const secondaryLinks = secondaryResponse.ok ? await secondaryResponse.json() : [];
+            if (!tenantResponse.ok) {
+                console.warn(`Supabase tenant error: ${tenantResponse.status}`);
+                return DEFAULT_CONFIG[tenantId] || DEFAULT_CONFIG.demo;
+            }
 
-        // Mapear datos al formato del widget
-        this.config = {
-          ...this.config,
-          companyName: tenant.company_name,
-          logo: tenant.logo,
-          description: tenant.description,
-          primaryColor: tenant.primary_color,
-          secondaryColor: tenant.secondary_color,
-          accentColor: tenant.accent_color,
-          borderRadius: tenant.border_radius,
-          position: tenant.position,
-          socialLinks: socialLinks.map(link => ({
-            name: link.label,
-            url: link.url,
-            icon: link.platform
-          })),
-          secondaryLinks: secondaryLinks.map(link => ({
-            name: link.label,
-            url: link.url,
-            icon: link.icon
-          }))
+            const tenants = await tenantResponse.json();
+            const tenant = tenants[0];
+
+            if (!tenant) {
+                return DEFAULT_CONFIG[tenantId] || DEFAULT_CONFIG.demo;
+            }
+
+            const socialLinksResponse = await fetch(
+                `${SUPABASE_URL}/rest/v1/social_links?tenant_id=eq.${tenant.id}&select=*`,
+                {
+                    headers: {
+                        apikey: SUPABASE_KEY,
+                        Authorization: `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            const socialLinks = socialLinksResponse.ok ? await socialLinksResponse.json() : [];
+
+            const socials = {};
+            const socialLinksMap = {};
+
+            socialLinks.forEach((link) => {
+                socials[link.platform] = true;
+                socialLinksMap[link.platform] = link.url;
+            });
+
+            return {
+                brand_color: tenant.accent_color || "#25D366",
+                title: "Contáctanos",
+                message: "Escríbenos o síguenos",
+                logo: tenant.logo || "",
+                company_name: tenant.company_name || "Mi Empresa",
+                company_url: "",
+                company_socials: {},
+                socials: socials,
+                social_links: socialLinksMap,
+            };
+        } catch (error) {
+            console.error("Error fetching tenant config:", error);
+            return DEFAULT_CONFIG[tenantId] || DEFAULT_CONFIG.demo;
+        }
+    }
+
+    const currentScript = document.currentScript;
+    const tenantId = currentScript?.dataset?.tenant || "demo";
+
+    async function initWidget() {
+        const config = await fetchTenantConfig(tenantId);
+
+        if (!config) {
+            console.error("Tenant no encontrado");
+            return;
+        }
+
+        const container = document.createElement("div");
+        container.id = "social-widget-root";
+        document.body.appendChild(container);
+
+        const shadow = container.attachShadow({ mode: "open" });
+
+        const style = document.createElement("style");
+        style.textContent = `
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+            :host {
+                --primary: ${config.brand_color || "#25D366"};
+                --bg-card: #ffffff;
+                --bg-overlay: rgba(0, 0, 0, 0.4);
+                --text-primary: #171717;
+                --text-secondary: #737373;
+                --border: #e5e5e5;
+                --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+                --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+                --radius: 16px;
+                --transition: 250ms ease-out;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            .floating-button {
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                border: none;
+                background: var(--primary);
+                color: white;
+                cursor: pointer;
+                box-shadow: var(--shadow-lg);
+                z-index: 999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform var(--transition), box-shadow var(--transition);
+            }
+
+            .floating-button:hover {
+                transform: scale(1.06);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+            }
+
+            .floating-button:active {
+                transform: scale(0.96);
+            }
+
+            .overlay {
+                position: fixed;
+                inset: 0;
+                background: var(--bg-overlay);
+                z-index: 999998;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity var(--transition), visibility var(--transition);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .modal {
+                position: fixed;
+                bottom: 100px;
+                right: 24px;
+                width: 360px;
+                max-height: calc(100vh - 140px);
+                background: var(--bg-card);
+                border-radius: var(--radius);
+                padding: 28px;
+                box-shadow: var(--shadow-lg);
+                z-index: 999999;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(16px) scale(0.96);
+                transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+                overflow-y: auto;
+            }
+
+            .modal.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0) scale(1);
+            }
+
+            .modal-header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 20px;
+                position: relative;
+            }
+
+            .modal-logo {
+                width: 56px;
+                height: 56px;
+                border-radius: 14px;
+                object-fit: contain;
+                background: #f5f5f5;
+                padding: 8px;
+                margin-bottom: 12px;
+            }
+
+            .modal-header-content {
+                text-align: center;
+            }
+
+            .company-socials {
+                display: flex;
+                justify-content: center;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .company-social-link {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                background: #f5f5f5;
+                color: var(--text-primary);
+                text-decoration: none;
+                transition: background var(--transition), color var(--transition), transform var(--transition);
+            }
+
+            .company-social-link:hover {
+                background: var(--primary);
+                color: white;
+                transform: scale(1.1);
+            }
+
+            .company-name-row {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .company-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--text-primary);
+                letter-spacing: -0.01em;
+            }
+
+            .company-link {
+                display: flex;
+                align-items: center;
+                color: var(--text-secondary);
+                text-decoration: none;
+                transition: color var(--transition), transform var(--transition);
+            }
+
+            .company-link:hover {
+                color: var(--primary);
+                transform: translateX(2px);
+            }
+
+            .close-button {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 32px;
+                height: 32px;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                color: var(--text-secondary);
+                transition: background var(--transition), color var(--transition);
+            }
+
+            .close-button:hover {
+                background: var(--border);
+                color: var(--text-primary);
+            }
+
+            .modal-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: var(--text-primary);
+                letter-spacing: -0.02em;
+            }
+
+            .modal-subtitle {
+                font-size: 14px;
+                color: var(--text-secondary);
+                margin-top: 4px;
+            }
+
+            .social-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .social-button {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                width: 100%;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 16px;
+                cursor: pointer;
+                background: transparent;
+                transition: background var(--transition), border-color var(--transition), transform var(--transition);
+            }
+
+            .social-button:hover {
+                background: #fafafa;
+                border-color: #d4d4d4;
+                transform: translateX(4px);
+            }
+
+            .social-button:active {
+                transform: translateX(4px) scale(0.98);
+            }
+
+            .social-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f5f5f5;
+                color: var(--text-primary);
+                transition: background var(--transition), color var(--transition);
+            }
+
+            .social-button:hover .social-icon {
+                background: var(--primary);
+                color: white;
+            }
+
+            .social-name {
+                font-size: 15px;
+                font-weight: 500;
+                color: var(--text-primary);
+            }
+
+            @media (max-width: 420px) {
+                .modal {
+                    width: calc(100vw - 32px);
+                    right: 16px;
+                    bottom: 90px;
+                }
+                .floating-button {
+                    bottom: 20px;
+                    right: 20px;
+                }
+            }
+        `;
+
+        const socialNames = {
+            whatsapp: "WhatsApp",
+            telegram: "Telegram",
+            instagram: "Instagram",
+            facebook: "Facebook",
+            linkedin: "LinkedIn",
+            mail: "Email",
+            github: "GitHub",
         };
 
-        this.updateStyles();
-        
-        // Re-render with new data
-        this.render();
-        
-        console.log('[SocialWidget] Config loaded:', this.config);
-      } catch (error) {
-        console.error('[SocialWidget] Error:', error.message);
-      }
-    }
+        const companySocials = config.company_socials || {};
+        const socials = config.socials || {};
+        const socialLinks = config.social_links || {};
 
-    updateStyles() {
-      const container = this.shadowRoot.querySelector('.widget-container');
-      if (container) {
-        container.style.setProperty('--primary-color', this.config.primaryColor);
-        container.style.setProperty('--secondary-color', this.config.secondaryColor);
-        container.style.setProperty('--accent-color', this.config.accentColor);
-        container.style.setProperty('--border-radius', `${this.config.borderRadius}px`);
-      }
-    }
-
-    render() {
-      const styles = this.getStyles();
-      const html = this.getHTML();
-
-      this.shadowRoot.innerHTML = `
-        <style>${styles}</style>
-        ${html}
-      `;
-
-      this.attachEventListeners();
-    }
-
-    getStyles() {
-      return `
-        :host {
-          --primary-color: ${this.config.primaryColor};
-          --secondary-color: ${this.config.secondaryColor};
-          --accent-color: ${this.config.accentColor};
-          --border-radius: ${this.config.borderRadius}px;
-          --transition-speed: 250ms;
-          --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.12);
-          --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.16);
-        }
-
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        .widget-container {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 12px;
-        }
-
-        .sticky-button {
-          width: 60px;
-          height: 60px;
-          border-radius: var(--border-radius);
-          border: none;
-          background: var(--primary-color);
-          color: var(--secondary-color);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: var(--shadow-soft);
-          transition: transform var(--transition-speed) ease-out,
-                      box-shadow var(--transition-speed) ease-out;
-          position: relative;
-        }
-
-        .sticky-button:hover {
-          transform: scale(1.05);
-          box-shadow: var(--shadow-hover);
-        }
-
-        .sticky-button:active {
-          transform: scale(0.95);
-        }
-
-        .sticky-button svg {
-          width: 28px;
-          height: 28px;
-          transition: transform var(--transition-speed) ease-out;
-        }
-
-        .sticky-button:hover svg {
-          transform: rotate(5deg);
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity var(--transition-speed) ease-out,
-                      visibility var(--transition-speed) ease-out;
-          z-index: 999999;
-        }
-
-        .modal-overlay.active {
-          opacity: 1;
-          visibility: visible;
-        }
-
-        .modal {
-          background: var(--secondary-color);
-          border-radius: var(--border-radius);
-          padding: 28px;
-          max-width: 380px;
-          width: 90%;
-          max-height: 80vh;
-          overflow-y: auto;
-          transform: scale(0.9) translateY(20px);
-          transition: transform var(--transition-speed) ease-out;
-          box-shadow: var(--shadow-soft);
-        }
-
-        .modal-overlay.active .modal {
-          transform: scale(1) translateY(0);
-        }
-
-        .modal-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 20px;
-        }
-
-        .modal-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: var(--primary-color);
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .modal-logo {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          object-fit: cover;
-          background: var(--accent-color);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: 700;
-          font-size: 16px;
-        }
-
-        .modal-logo img {
-          width: 100%;
-          height: 100%;
-          border-radius: 10px;
-          object-fit: cover;
-        }
-
-        .close-button {
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background var(--transition-speed) ease-out;
-          color: var(--primary-color);
-          opacity: 0.6;
-        }
-
-        .close-button:hover {
-          background: rgba(0, 0, 0, 0.05);
-          opacity: 1;
-        }
-
-        .social-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin-bottom: 20px;
-        }
-
-        .social-link {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 14px 16px;
-          border-radius: 12px;
-          text-decoration: none;
-          color: var(--primary-color);
-          background: rgba(0, 0, 0, 0.03);
-          transition: transform var(--transition-speed) ease-out,
-                      background var(--transition-speed) ease-out;
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        .social-link:hover {
-          transform: translateY(-2px);
-          background: rgba(0, 0, 0, 0.06);
-        }
-
-        .social-link svg {
-          width: 22px;
-          height: 22px;
-          flex-shrink: 0;
-        }
-
-        .secondary-section {
-          border-top: 1px solid rgba(0, 0, 0, 0.08);
-          padding-top: 16px;
-        }
-
-        .secondary-link {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 12px;
-          border-radius: 10px;
-          text-decoration: none;
-          color: var(--primary-color);
-          font-size: 14px;
-          transition: background var(--transition-speed) ease-out;
-        }
-
-        .secondary-link:hover {
-          background: rgba(0, 0, 0, 0.03);
-        }
-
-        .secondary-link svg {
-          width: 18px;
-          height: 18px;
-          opacity: 0.7;
-        }
-
-        .expand-button {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          width: 100%;
-          padding: 14px;
-          border-radius: 12px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          background: transparent;
-          color: var(--primary-color);
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background var(--transition-speed) ease-out,
-                      border-color var(--transition-speed) ease-out;
-          margin-top: 12px;
-        }
-
-        .expand-button:hover {
-          background: rgba(0, 0, 0, 0.03);
-          border-color: rgba(0, 0, 0, 0.2);
-        }
-
-        .expand-button svg {
-          width: 16px;
-          height: 16px;
-          transition: transform var(--transition-speed) ease-out;
-        }
-
-        .expand-button:hover svg {
-          transform: translateX(4px);
-        }
-
-        .description {
-          font-size: 14px;
-          color: var(--primary-color);
-          opacity: 0.7;
-          line-height: 1.6;
-          margin-bottom: 20px;
-        }
-
-        @media (max-width: 480px) {
-          .modal {
-            padding: 20px;
-            max-width: calc(100% - 32px);
-          }
-
-          .social-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `;
-    }
-
-    getHTML() {
-      const icons = this.getIcons();
-
-      return `
-        <div class="widget-container">
-          <button class="sticky-button" aria-label="Abrir widget">
-            ${icons.message}
-          </button>
-
-          <div class="modal-overlay" id="mainModal">
-            <div class="modal" onclick="event.stopPropagation()">
-              <div class="modal-header">
-                <div class="modal-title">
-                  <div class="modal-logo">
-                    ${this.config.logo ? `<img src="${this.config.logo}" alt="${this.config.companyName}" />` : this.config.companyName.charAt(0)}
-                  </div>
-                  <span>${this.config.companyName}</span>
-                </div>
-                <button class="close-button" id="closeMainModal">
-                  ${icons.close}
+        const socialButtonsHTML = Object.entries(socials)
+            .filter(([_, active]) => active)
+            .map(([icon]) => `
+                <button class="social-button" data-url="${socialLinks[icon] || '#'}" aria-label="${socialNames[icon] || icon}">
+                    <div class="social-icon">
+                        ${SVG_ICONS[icon] || SVG_ICONS.chat}
+                    </div>
+                    <span class="social-name">${socialNames[icon] || icon}</span>
                 </button>
-              </div>
+            `)
+            .join("");
 
-              ${this.config.description ? `<p class="description">${this.config.description}</p>` : ''}
+        const wrapper = document.createElement("div");
 
-              <div class="social-grid" id="socialGrid">
-                ${this.renderSocialLinks(icons)}
-              </div>
+        wrapper.innerHTML = `
+            <button class="floating-button" aria-label="Abrir chat">
+                ${SVG_ICONS.chat}
+            </button>
 
-              <button class="expand-button" id="openSecondaryModal">
-                ${icons.info}
-                <span>Ver más información</span>
-                ${icons.arrow}
-              </button>
-            </div>
-          </div>
+            <div class="overlay"></div>
 
-          <div class="modal-overlay" id="secondaryModal">
-            <div class="modal" onclick="event.stopPropagation()">
-              <div class="modal-header">
-                <div class="modal-title">
-                  <span>Información adicional</span>
-                </div>
-                <button class="close-button" id="closeSecondaryModal">
-                  ${icons.close}
+            <div class="modal">
+                <button class="close-button" aria-label="Cerrar">
+                    ${SVG_ICONS.close}
                 </button>
-              </div>
-
-              <div class="secondary-section" id="secondaryLinks">
-                ${this.renderSecondaryLinks(icons)}
-              </div>
+                <div class="modal-header">
+                    ${config.logo ? `<img src="${config.logo}" alt="Logo" class="modal-logo" />` : ""}
+                    ${config.company_name ? `
+                        <div class="company-name-row">
+                            <span class="company-name">${config.company_name}</span>
+                            <a href="${config.company_url || '#'}" target="_blank" class="company-link" aria-label="Visitar sitio web">
+                                ${SVG_ICONS.external}
+                            </a>
+                        </div>
+                    ` : ""}
+                    ${Object.keys(companySocials).length > 0 ? `
+                        <div class="company-socials">
+                            ${Object.entries(companySocials)
+                    .filter(([_, active]) => active)
+                    .map(([icon]) => `
+                                <a href="${socialLinks[icon] || '#'}" target="_blank" class="company-social-link" aria-label="${icon}">
+                                    ${SVG_ICONS[icon] || ""}
+                                </a>
+                            `).join("")}
+                        </div>
+                    ` : ""}
+                    <div class="modal-header-content">
+                        <div class="modal-title">${config.title || "Contáctanos"}</div>
+                        <div class="modal-subtitle">${config.message || "Escríbenos o síguenos"}</div>
+                    </div>
+                </div>
+                <div class="social-list">
+                    ${socialButtonsHTML}
+                </div>
             </div>
-          </div>
-        </div>
-      `;
+        `;
+
+        shadow.appendChild(style);
+        shadow.appendChild(wrapper);
+
+        const floatingButton = shadow.querySelector(".floating-button");
+        const modal = shadow.querySelector(".modal");
+        const overlay = shadow.querySelector(".overlay");
+        const closeButton = shadow.querySelector(".close-button");
+
+        const openModal = () => {
+            modal.classList.add("active");
+            overlay.classList.add("active");
+        };
+
+        const closeModal = () => {
+            modal.classList.remove("active");
+            overlay.classList.remove("active");
+        };
+
+        floatingButton.addEventListener("click", openModal);
+        closeButton.addEventListener("click", closeModal);
+        overlay.addEventListener("click", closeModal);
+
+        const socialButtons = shadow.querySelectorAll(".social-button");
+        socialButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const url = button.dataset.url;
+                if (url && url !== "#") {
+                    window.open(url, "_blank");
+                }
+            });
+        });
     }
 
-    renderSocialLinks(icons) {
-      const links = this.config.socialLinks || [
-        { name: 'WhatsApp', url: 'https://wa.me/', icon: 'whatsapp' },
-        { name: 'Instagram', url: 'https://instagram.com/', icon: 'instagram' },
-        { name: 'Facebook', url: 'https://facebook.com/', icon: 'facebook' },
-        { name: 'TikTok', url: 'https://tiktok.com/', icon: 'tiktok' }
-      ];
-
-      return links.map(link => `
-        <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="social-link">
-          ${icons[link.icon] || icons.link}
-          <span>${link.name}</span>
-        </a>
-      `).join('');
-    }
-
-    renderSecondaryLinks(icons) {
-      const links = this.config.secondaryLinks || [
-        { name: 'Visitar sitio web', url: '#', icon: 'globe' },
-        { name: 'Enviar correo', url: 'mailto:', icon: 'mail' }
-      ];
-
-      return links.map(link => `
-        <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="secondary-link">
-          ${icons[link.icon] || icons.link}
-          <span>${link.name}</span>
-        </a>
-      `).join('');
-    }
-
-    getIcons() {
-      return {
-        message: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>`,
-        close: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>`,
-        info: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>`,
-        arrow: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>`,
-        link: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-        </svg>`,
-        whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.162-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>`,
-        instagram: `<svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-        </svg>`,
-        facebook: `<svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>`,
-        tiktok: `<svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
-        </svg>`,
-        globe: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-        </svg>`,
-        mail: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>`
-      };
-    }
-
-    attachEventListeners() {
-      const stickyButton = this.shadowRoot.querySelector('.sticky-button');
-      const mainModal = this.shadowRoot.querySelector('#mainModal');
-      const closeMainModal = this.shadowRoot.querySelector('#closeMainModal');
-      const openSecondaryModal = this.shadowRoot.querySelector('#openSecondaryModal');
-      const secondaryModal = this.shadowRoot.querySelector('#secondaryModal');
-      const closeSecondaryModal = this.shadowRoot.querySelector('#closeSecondaryModal');
-
-      stickyButton?.addEventListener('click', () => this.openMainModal());
-      closeMainModal?.addEventListener('click', () => this.closeMainModal());
-      mainModal?.addEventListener('click', (e) => {
-        if (e.target === mainModal) this.closeMainModal();
-      });
-
-      openSecondaryModal?.addEventListener('click', () => this.openSecondaryModal());
-      closeSecondaryModal?.addEventListener('click', () => this.closeSecondaryModal());
-      secondaryModal?.addEventListener('click', (e) => {
-        if (e.target === secondaryModal) this.closeSecondaryModal();
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          if (this.isSecondaryOpen) this.closeSecondaryModal();
-          else if (this.isOpen) this.closeMainModal();
-        }
-      });
-    }
-
-    openMainModal() {
-      const modal = this.shadowRoot.querySelector('#mainModal');
-      modal?.classList.add('active');
-      this.isOpen = true;
-    }
-
-    closeMainModal() {
-      const modal = this.shadowRoot.querySelector('#mainModal');
-      modal?.classList.remove('active');
-      this.isOpen = false;
-    }
-
-    openSecondaryModal() {
-      const modal = this.shadowRoot.querySelector('#secondaryModal');
-      modal?.classList.add('active');
-      this.isSecondaryOpen = true;
-      this.closeMainModal();
-    }
-
-    closeSecondaryModal() {
-      const modal = this.shadowRoot.querySelector('#secondaryModal');
-      modal?.classList.remove('active');
-      this.isSecondaryOpen = false;
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => new SocialWidget());
-  } else {
-    new SocialWidget();
-  }
+    initWidget();
 })();
