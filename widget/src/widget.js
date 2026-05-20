@@ -103,8 +103,7 @@
         }
     }
 
-    const currentScript = document.currentScript;
-    const tenantId = currentScript?.dataset?.tenant || "demo";
+    const tenantId = scriptDataset.tenant || "demo";
 
     async function initWidget() {
         const config = await fetchTenantConfig(tenantId);
