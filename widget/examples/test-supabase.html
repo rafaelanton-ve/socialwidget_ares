@@ -25,8 +25,9 @@
   <pre id="secondary-result">Loading...</pre>
 
   <script>
-    const SUPABASE_URL = 'https://nrlheaawsxdwditkgckc.supabase.co';
-    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybGhlYWF3c3hkd2RpdGtnY2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MDAyNDMsImV4cCI6MjA5NDQ3NjI0M30.OUJY3thQxD5YOmyAAzF7qeriX6GHAzVllYe7Hyn_4DE';
+    // TODO: Reemplaza con tus credenciales de Supabase
+    const SUPABASE_URL = window.SUPABASE_URL || 'https://TU_PROYECTO.supabase.co';
+    const ANON_KEY = window.SUPABASE_ANON_KEY || 'tu-anon-key-aqui';
 
     async function testAPI() {
       // Test 1: Get tenant

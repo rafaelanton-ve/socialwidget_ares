@@ -19,7 +19,15 @@
 
     };
 
-    const WIDGET_API_URL = "https://nrlheaawsxdwditkgckc.supabase.co/functions/v1/get-tenant-config";
+    const currentScript = document.currentScript;
+    const scriptDataset = currentScript?.dataset || {};
+
+    const WIDGET_CONFIG = {
+        apiUrl: scriptDataset.apiUrl || window.SOCIAL_WIDGET_API_URL || "",
+        anonKey: scriptDataset.apiKey || window.SOCIAL_WIDGET_API_KEY || "",
+        projectUrl: scriptDataset.projectUrl || window.SOCIAL_WIDGET_PROJECT_URL || ""
+    };
+
     const DEFAULT_CONFIG = {
         demo: {
             brand_color: "#25D366",
@@ -49,17 +57,30 @@
         },
     };
 
+    function sanitizeTenantId(tenantId) {
+        const sanitized = String(tenantId).replace(/[^a-zA-Z0-9-_]/g, '');
+        return sanitized.length > 100 ? sanitized.substring(0, 100) : sanitized;
+    }
+
+    function hasValidConfig() {
+        return WIDGET_CONFIG.apiUrl && WIDGET_CONFIG.anonKey;
+    }
+
     async function fetchTenantConfig(tenantId) {
-        if (!tenantId || tenantId === "demo") {
+        if (!tenantId || tenantId === "demo" || !hasValidConfig()) {
             return DEFAULT_CONFIG.demo;
         }
 
+        const safeTenantId = sanitizeTenantId(tenantId);
+
         try {
             const response = await fetch(
-                `${WIDGET_API_URL}?tenant=${encodeURIComponent(tenantId)}`,
+                `${WIDGET_CONFIG.apiUrl}?tenant=${encodeURIComponent(safeTenantId)}`,
                 {
                     headers: {
                         "Content-Type": "application/json",
+                        "apikey": WIDGET_CONFIG.anonKey,
+                        "Authorization": `Bearer ${WIDGET_CONFIG.anonKey}`
                     },
                 }
             );
@@ -70,6 +91,11 @@
             }
 
             const config = await response.json();
+            if (config.error) {
+                console.warn(`Widget API error: ${config.error}`);
+                return DEFAULT_CONFIG.demo;
+            }
+
             return config;
         } catch (error) {
             console.error("Error fetching tenant config:", error);
