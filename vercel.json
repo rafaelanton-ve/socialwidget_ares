@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm run build --prefix dashboard",
-  "outputDirectory": "dashboard/dist",
+  "framework": "vite",
+  "build": {
+    "command": "npm install --prefix dashboard && npm run build --prefix dashboard",
+    "outputDirectory": "dashboard/dist"
+  },
   "rewrites": [
     { "source": "/widget.js", "destination": "/widget/dist/widget.min.js" },
     { "source": "/(.*)", "destination": "/dashboard/dist/index.html" }
