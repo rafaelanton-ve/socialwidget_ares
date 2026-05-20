@@ -1,7 +1,5 @@
 {
-  "framework": "vue",
-  "installCommand": "cd dashboard && npm install",
-  "buildCommand": "cd dashboard && npm run build",
+  "buildCommand": "npm run build:dashboard",
   "outputDirectory": "dashboard/dist",
   "rewrites": [
     { "source": "/widget.js", "destination": "/widget/dist/widget.min.js" },

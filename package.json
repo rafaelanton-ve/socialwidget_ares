@@ -1,0 +1,8 @@
+{
+  "name": "social-widget-ares",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:dashboard": "cd dashboard && npm install && npm run build"
+  }
+}
